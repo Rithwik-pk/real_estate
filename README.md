@@ -2,6 +2,9 @@
 
 A production-ready Frappe v15/v16 app for end-to-end real estate and property portfolio management, fully integrated with ERPNext. Covers the complete lifecycle from property onboarding and tenant leasing through automated billing, maintenance tracking, sales, and AI-powered portfolio analytics.
 
+
+<img width="862" height="602" alt="Screenshot from 2026-06-17 03-48-24" src="https://github.com/user-attachments/assets/f4739a5d-083d-46e3-8598-da12d75b9fa9" />
+
 ---
 
 ## Table of Contents
