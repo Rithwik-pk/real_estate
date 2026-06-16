@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series", "property_unit", "buyer", "col_break_1",
+  "agent", "sale_price", "status",
+  "section_dates",
+  "agreement_date", "transfer_date", "registration_no",
+  "section_schedule",
+  "payment_schedule",
+  "section_docs",
+  "signed_document", "documents"
+ ],
+ "fields": [
+  {"fieldname": "naming_series", "fieldtype": "Select", "label": "Series",
+   "options": "SA-.YYYY.-.####", "default": "SA-.YYYY.-.####"},
+  {"fieldname": "property_unit", "fieldtype": "Link", "label": "Property Unit",
+   "options": "Property Unit", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "buyer", "fieldtype": "Link", "label": "Buyer",
+   "options": "Customer", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "agent", "fieldtype": "Link", "label": "Agent", "options": "Agent"},
+  {"fieldname": "sale_price", "fieldtype": "Currency", "label": "Sale Price", "reqd": 1},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status",
+   "options": "Draft\nActive\nCompleted\nCancelled", "default": "Draft", "in_list_view": 1},
+  {"fieldname": "section_dates", "fieldtype": "Section Break", "label": "Key Dates"},
+  {"fieldname": "agreement_date", "fieldtype": "Date", "label": "Agreement Date", "default": "Today"},
+  {"fieldname": "transfer_date", "fieldtype": "Date", "label": "Transfer Date"},
+  {"fieldname": "registration_no", "fieldtype": "Data", "label": "Registration No."},
+  {"fieldname": "section_schedule", "fieldtype": "Section Break", "label": "Payment Schedule"},
+  {"fieldname": "payment_schedule", "fieldtype": "Table", "label": "Payment Schedule",
+   "options": "Payment Schedule Item"},
+  {"fieldname": "section_docs", "fieldtype": "Section Break", "label": "Documents"},
+  {"fieldname": "signed_document", "fieldtype": "Attach", "label": "Signed Agreement"},
+  {"fieldname": "documents", "fieldtype": "Table", "label": "Documents", "options": "Property Document"}
+ ],
+ "index_web_pages_for_search": 0,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "Sale Agreement",
+ "owner": "Administrator",
+ "permissions": [
+  {"role": "Property Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "permlevel": 0},
+  {"role": "Real Estate Agent", "read": 1, "write": 1, "create": 1, "delete": 0, "submit": 0, "cancel": 0, "permlevel": 0},
+  {"role": "Accountant", "read": 1, "write": 0, "create": 0, "delete": 0, "submit": 0, "cancel": 0, "permlevel": 0}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {"title": "Draft", "color": "Gray"},
+  {"title": "Active", "color": "Blue"},
+  {"title": "Completed", "color": "Green"},
+  {"title": "Cancelled", "color": "Red"}
+ ],
+ "title_field": "buyer",
+ "track_changes": 1
+}

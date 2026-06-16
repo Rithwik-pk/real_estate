@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": ["utility_type", "previous_reading", "current_reading", "consumption", "rate_per_unit", "amount"],
+ "fields": [
+  {
+   "fieldname": "utility_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Utility Type",
+   "options": "Electricity\nWater\nGas\nInternet\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "previous_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Previous Reading"
+  },
+  {
+   "fieldname": "current_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Current Reading"
+  },
+  {
+   "fieldname": "consumption",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Consumption",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_per_unit",
+   "fieldtype": "Currency",
+   "label": "Rate per Unit"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "Utility Charge",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

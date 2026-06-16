@@ -1,0 +1,6 @@
+[
+ {"doctype": "Role", "name": "Property Manager", "role_name": "Property Manager", "desk_access": 1},
+ {"doctype": "Role", "name": "Real Estate Agent", "role_name": "Real Estate Agent", "desk_access": 1},
+ {"doctype": "Role", "name": "Tenant", "role_name": "Tenant", "desk_access": 0},
+ {"doctype": "Role", "name": "Property Owner", "role_name": "Property Owner", "desk_access": 1}
+]

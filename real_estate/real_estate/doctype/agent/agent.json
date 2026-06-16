@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "autoname": "field:agent_name",
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "agent_name", "license_no", "email", "phone", "col_break_1",
+  "commission_percent_sale", "commission_percent_rental",
+  "pending_commission", "user_link",
+  "section_docs",
+  "documents"
+ ],
+ "fields": [
+  {"fieldname": "agent_name", "fieldtype": "Data", "label": "Agent Name", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "license_no", "fieldtype": "Data", "label": "License No.", "in_list_view": 1},
+  {"fieldname": "email", "fieldtype": "Data", "options": "Email", "label": "Email"},
+  {"fieldname": "phone", "fieldtype": "Phone", "label": "Phone"},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "commission_percent_sale", "fieldtype": "Percent", "label": "Commission % (Sale)", "default": "2"},
+  {"fieldname": "commission_percent_rental", "fieldtype": "Percent", "label": "Commission % (Rental)", "default": "8"},
+  {"fieldname": "pending_commission", "fieldtype": "Currency", "label": "Pending Commission",
+   "read_only": 1},
+  {"fieldname": "user_link", "fieldtype": "Link", "label": "Linked User", "options": "User"},
+  {"fieldname": "section_docs", "fieldtype": "Section Break", "label": "Documents"},
+  {"fieldname": "documents", "fieldtype": "Table", "label": "Documents", "options": "Property Document"}
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "Agent",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {"role": "Property Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "permlevel": 0},
+  {"role": "Real Estate Agent", "read": 1, "write": 0, "create": 0, "delete": 0, "permlevel": 0}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "agent_name",
+ "track_changes": 1
+}

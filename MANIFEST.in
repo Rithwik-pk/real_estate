@@ -1,0 +1,2 @@
+include requirements.txt
+recursive-include real_estate *.json *.js *.css *.html *.md *.png *.jpg *.svg

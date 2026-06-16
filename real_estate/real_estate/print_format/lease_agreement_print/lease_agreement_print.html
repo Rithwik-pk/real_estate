@@ -1,0 +1,202 @@
+{%- set company = frappe.defaults.get_user_default("Company") or frappe.db.get_single_value("Global Defaults", "default_company") -%}
+{%- set company_doc = frappe.get_doc("Company", company) if company else None -%}
+{%- set unit = frappe.get_doc("Property Unit", doc.unit) if doc.unit else None -%}
+{%- set prop = frappe.get_doc("Property", unit.property) if unit else None -%}
+{%- set agent_doc = frappe.get_doc("Agent", doc.agent) if doc.agent else None -%}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12px; color: #111; line-height: 1.6; }
+  .la-wrap { max-width: 780px; margin: 0 auto; padding: 10px; }
+
+  .la-header { text-align: center; border-bottom: 3px double #1a5276; padding-bottom: 16px; margin-bottom: 20px; }
+  .la-header .co-name { font-size: 20px; font-weight: bold; color: #1a5276; }
+  .la-header .doc-title { font-size: 16px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; color: #333; }
+  .la-header .doc-ref { font-size: 12px; color: #666; margin-top: 4px; }
+
+  .status-bar { text-align: center; margin-bottom: 16px; }
+  .badge { display: inline-block; padding: 4px 16px; border-radius: 12px; font-size: 11px;
+           font-weight: bold; text-transform: uppercase; font-family: Arial, sans-serif; }
+  .badge-active     { background: #d5f5e3; color: #1e8449; border: 1px solid #82e0aa; }
+  .badge-draft      { background: #fef9e7; color: #d4ac0d; border: 1px solid #f9e79f; }
+  .badge-terminated { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+  .badge-expired    { background: #f4f6f7; color: #717d7e; border: 1px solid #cacfd2; }
+
+  .la-section { margin-bottom: 20px; }
+  .la-section h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #1a5276;
+                   border-bottom: 1px solid #d5d8dc; padding-bottom: 4px; margin-bottom: 10px; font-family: Arial, sans-serif; }
+
+  .la-grid { display: flex; gap: 20px; }
+  .la-col { flex: 1; }
+  .la-field { margin-bottom: 8px; }
+  .la-field .lbl { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: .5px; font-family: Arial, sans-serif; }
+  .la-field .val { font-size: 13px; font-weight: bold; }
+
+  .la-terms { background: #f8f9fa; border-left: 3px solid #1a5276; padding: 12px 16px;
+              border-radius: 0 4px 4px 0; font-size: 12px; line-height: 1.8; }
+
+  .la-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .la-table th { background: #1a5276; color: #fff; padding: 7px 10px; text-align: left; font-family: Arial, sans-serif; font-size: 11px; }
+  .la-table td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+  .la-table tr:last-child td { border-bottom: none; }
+
+  .signature-block { display: flex; gap: 40px; margin-top: 40px; }
+  .sig-party { flex: 1; border-top: 1px solid #333; padding-top: 8px; }
+  .sig-party .sig-name { font-weight: bold; margin-bottom: 2px; }
+  .sig-party .sig-role { font-size: 11px; color: #666; }
+
+  .la-footer { text-align: center; font-size: 10px; color: #aaa; margin-top: 16px;
+               border-top: 1px solid #ddd; padding-top: 8px; font-family: Arial, sans-serif; }
+</style>
+
+<div class="la-wrap">
+  <!-- Header -->
+  <div class="la-header">
+    <div class="co-name">{{ company or "Property Management Co." }}</div>
+    {% if company_doc and company_doc.address %}<div style="font-size:11px;color:#666;">{{ company_doc.address }}</div>{% endif %}
+    <div class="doc-title">Tenancy / Lease Agreement</div>
+    <div class="doc-ref">Ref: {{ doc.lease_no or doc.name }} &nbsp;|&nbsp; Dated: {{ frappe.format(doc.agreement_date or doc.creation, "Date") }}</div>
+  </div>
+
+  <div class="status-bar">
+    <span class="badge badge-{{ doc.lease_status | lower | replace(' ','-') if doc.lease_status else 'draft' }}">
+      {{ doc.lease_status or "Draft" }}
+    </span>
+  </div>
+
+  <!-- Parties -->
+  <div class="la-section">
+    <h3>Parties</h3>
+    <div class="la-grid">
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Landlord / Lessor</div><div class="val">{{ company or "—" }}</div></div>
+        {% if company_doc %}<div class="la-field"><div class="lbl">Company Tax ID</div><div class="val">{{ company_doc.tax_id or "—" }}</div></div>{% endif %}
+      </div>
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Tenant / Lessee</div><div class="val">{{ doc.tenant }}</div></div>
+        <div class="la-field"><div class="lbl">Tenant ID / Iqama</div><div class="val">{{ doc.tenant_id_number or "—" }}</div></div>
+        <div class="la-field"><div class="lbl">Contact</div><div class="val">{{ doc.tenant_contact or "—" }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property -->
+  <div class="la-section">
+    <h3>Leased Property</h3>
+    <div class="la-grid">
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Property</div><div class="val">{{ prop.property_name if prop else "—" }}</div></div>
+        <div class="la-field"><div class="lbl">Address</div><div class="val">{{ prop.address if prop and prop.address else "—" }}</div></div>
+      </div>
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Unit</div><div class="val">{{ unit.unit_number if unit else doc.unit }}</div></div>
+        <div class="la-field"><div class="lbl">Unit Type</div><div class="val">{{ unit.unit_type if unit else "—" }}</div></div>
+        <div class="la-field"><div class="lbl">Floor Area</div><div class="val">{{ unit.floor_area if unit else "—" }} {{ unit.area_unit if unit else "" }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial Terms -->
+  <div class="la-section">
+    <h3>Financial Terms</h3>
+    <div class="la-grid">
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Lease Type</div><div class="val">{{ doc.lease_type or "—" }}</div></div>
+        <div class="la-field"><div class="lbl">Monthly Rent</div><div class="val">{{ frappe.format_value(doc.monthly_rent, {"fieldtype":"Currency","currency": doc.currency or "SAR"}) }}</div></div>
+        <div class="la-field"><div class="lbl">Security Deposit</div><div class="val">{{ frappe.format_value(doc.security_deposit, {"fieldtype":"Currency","currency": doc.currency or "SAR"}) }}</div></div>
+      </div>
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Lease Start</div><div class="val">{{ frappe.format(doc.start_date, "Date") }}</div></div>
+        <div class="la-field"><div class="lbl">Lease End</div><div class="val">{{ frappe.format(doc.end_date, "Date") }}</div></div>
+        <div class="la-field"><div class="lbl">Payment Due Day</div><div class="val">Day {{ doc.payment_due_day }} of each month</div></div>
+        {% if doc.grace_period_days %}<div class="la-field"><div class="lbl">Grace Period</div><div class="val">{{ doc.grace_period_days }} days</div></div>{% endif %}
+        {% if doc.late_fee_percent %}<div class="la-field"><div class="lbl">Late Fee</div><div class="val">{{ doc.late_fee_percent }}% of monthly rent</div></div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Escalation -->
+  {% if doc.annual_escalation_percent %}
+  <div class="la-section">
+    <h3>Rent Escalation</h3>
+    <div class="la-field"><div class="lbl">Annual Escalation Rate</div><div class="val">{{ doc.annual_escalation_percent }}% per year</div></div>
+  </div>
+  {% endif %}
+
+  <!-- Agent -->
+  {% if doc.agent %}
+  <div class="la-section">
+    <h3>Agent / Broker</h3>
+    <div class="la-grid">
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Agent</div><div class="val">{{ agent_doc.agent_name if agent_doc else doc.agent }}</div></div>
+      </div>
+      <div class="la-col">
+        <div class="la-field"><div class="lbl">Commission</div><div class="val">{{ frappe.format_value(doc.agent_commission, {"fieldtype":"Currency","currency": doc.currency or "SAR"}) }}</div></div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Special Clauses -->
+  {% if doc.special_clauses %}
+  <div class="la-section">
+    <h3>Special Clauses &amp; Conditions</h3>
+    <div class="la-terms">{{ doc.special_clauses }}</div>
+  </div>
+  {% endif %}
+
+  <!-- AI-generated clauses -->
+  {% if doc.ai_clauses %}
+  <div class="la-section">
+    <h3>Standard Tenancy Clauses</h3>
+    <div class="la-terms" style="white-space: pre-line;">{{ doc.ai_clauses }}</div>
+  </div>
+  {% endif %}
+
+  <!-- Renewal History -->
+  {% if doc.renewal_history %}
+  <div class="la-section">
+    <h3>Renewal History</h3>
+    <table class="la-table">
+      <thead>
+        <tr><th>Renewal Date</th><th>New End Date</th><th>New Monthly Rent</th><th>Escalation Applied</th></tr>
+      </thead>
+      <tbody>
+        {% for r in doc.renewal_history %}
+        <tr>
+          <td>{{ frappe.format(r.renewal_date, "Date") }}</td>
+          <td>{{ frappe.format(r.new_end_date, "Date") }}</td>
+          <td>{{ frappe.format_value(r.new_monthly_rent, {"fieldtype":"Currency","currency": doc.currency or "SAR"}) }}</td>
+          <td>{{ r.escalation_applied or "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Signatures -->
+  <div class="signature-block">
+    <div class="sig-party">
+      <div class="sig-name">{{ company or "Landlord" }}</div>
+      <div class="sig-role">Authorised Signatory — Lessor</div>
+      <div style="margin-top:30px;font-size:11px;color:#aaa;">Signature / Stamp</div>
+    </div>
+    <div class="sig-party">
+      <div class="sig-name">{{ doc.tenant }}</div>
+      <div class="sig-role">Tenant — Lessee</div>
+      <div style="margin-top:30px;font-size:11px;color:#aaa;">Signature</div>
+    </div>
+    {% if doc.agent %}
+    <div class="sig-party">
+      <div class="sig-name">{{ agent_doc.agent_name if agent_doc else doc.agent }}</div>
+      <div class="sig-role">Agent / Broker</div>
+      <div style="margin-top:30px;font-size:11px;color:#aaa;">Signature</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="la-footer">
+    This is a legally binding agreement. — Generated {{ frappe.format(frappe.utils.now(), "Datetime") }}
+  </div>
+</div>

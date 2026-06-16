@@ -1,0 +1,231 @@
+{%- set company = frappe.defaults.get_user_default("Company") or frappe.db.get_single_value("Global Defaults", "default_company") -%}
+{%- set company_doc = frappe.get_doc("Company", company) if company else None -%}
+{%- set lease = frappe.get_doc("Lease Agreement", doc.lease) if doc.lease else None -%}
+{%- set unit = frappe.get_doc("Property Unit", doc.unit) if doc.unit else None -%}
+{%- set prop = frappe.get_doc("Property", unit.property) if unit else None -%}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #222; }
+  .re-wrap { max-width: 780px; margin: 0 auto; padding: 10px; }
+
+  /* Header */
+  .re-header { background: #1a5276; color: #fff; padding: 20px 24px; border-radius: 4px 4px 0 0;
+               display: flex; justify-content: space-between; align-items: flex-start; }
+  .re-header .co-name { font-size: 20px; font-weight: bold; }
+  .re-header .co-sub  { font-size: 11px; opacity: .8; margin-top: 4px; }
+  .re-header .inv-box { text-align: right; }
+  .re-header .inv-title { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+  .re-header .inv-no   { font-size: 13px; margin-top: 4px; }
+
+  /* Status badge */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
+           font-weight: bold; text-transform: uppercase; }
+  .badge-paid    { background: #d5f5e3; color: #1e8449; }
+  .badge-unpaid  { background: #fdebd0; color: #d35400; }
+  .badge-overdue { background: #fdedec; color: #c0392b; }
+
+  /* Parties */
+  .re-parties { display: flex; gap: 16px; padding: 16px 24px; background: #f4f6f7;
+                border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+  .re-party { flex: 1; }
+  .re-party h4 { font-size: 10px; text-transform: uppercase; color: #777; margin-bottom: 6px; letter-spacing: .5px; }
+  .re-party p  { font-size: 12px; line-height: 1.6; }
+
+  /* Meta row */
+  .re-meta { display: flex; border: 1px solid #ddd; border-top: none; }
+  .re-meta-cell { flex: 1; padding: 10px 24px; border-right: 1px solid #ddd; }
+  .re-meta-cell:last-child { border-right: none; }
+  .re-meta-cell .lbl { font-size: 10px; text-transform: uppercase; color: #777; letter-spacing: .5px; }
+  .re-meta-cell .val { font-size: 13px; font-weight: bold; margin-top: 2px; }
+
+  /* Property info */
+  .re-property { padding: 10px 24px; background: #eaf4fb; border: 1px solid #d6eaf8; border-top: none;
+                  font-size: 11px; color: #1a5276; }
+
+  /* Items table */
+  .re-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .re-table thead th { background: #2c3e50; color: #fff; padding: 8px 12px; text-align: left; font-size: 11px; }
+  .re-table thead th:last-child { text-align: right; }
+  .re-table tbody td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 12px; }
+  .re-table tbody td:last-child { text-align: right; }
+  .re-table tbody tr:last-child td { border-bottom: none; }
+  .re-table tfoot td { padding: 6px 12px; font-size: 12px; }
+  .re-table tfoot .subtotal-row td { border-top: 1px solid #ddd; color: #555; }
+  .re-table tfoot .total-row td { border-top: 2px solid #1a5276; font-weight: bold; font-size: 14px; color: #1a5276; }
+  .re-table tfoot td:last-child { text-align: right; }
+
+  /* Footer */
+  .re-footer { display: flex; justify-content: space-between; align-items: flex-start;
+               padding: 16px 0; margin-top: 16px; border-top: 1px solid #ddd; }
+  .re-notes { flex: 1; font-size: 11px; color: #555; line-height: 1.6; }
+  .re-qr { text-align: center; }
+  .re-qr img { width: 80px; height: 80px; }
+  .re-qr p { font-size: 9px; color: #888; margin-top: 4px; }
+</style>
+
+<div class="re-wrap">
+  <!-- Header -->
+  <div class="re-header">
+    <div>
+      <div class="co-name">{{ company or "Property Management" }}</div>
+      {% if company_doc %}
+      <div class="co-sub">{{ company_doc.address or "" }}</div>
+      {% endif %}
+    </div>
+    <div class="inv-box">
+      <div class="inv-title">RENT INVOICE</div>
+      <div class="inv-no">{{ doc.invoice_no or doc.name }}</div>
+      <div style="margin-top:6px;">
+        <span class="badge badge-{{ doc.status | lower | replace(' ','-') }}">{{ doc.status }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parties -->
+  <div class="re-parties">
+    <div class="re-party">
+      <h4>Billed To</h4>
+      <p>
+        <strong>{{ doc.tenant }}</strong><br>
+        {% if lease %}{{ lease.tenant_contact or "" }}{% endif %}
+      </p>
+    </div>
+    <div class="re-party">
+      <h4>Property</h4>
+      <p>
+        {% if prop %}<strong>{{ prop.property_name }}</strong><br>{{ prop.address or "" }}<br>{% endif %}
+        {% if unit %}Unit: <strong>{{ unit.unit_number or doc.unit }}</strong>{% endif %}
+      </p>
+    </div>
+    <div class="re-party">
+      <h4>Lease Reference</h4>
+      <p>
+        {{ doc.lease or "—" }}<br>
+        {% if lease %}
+          From: {{ frappe.format(lease.start_date, "Date") }}<br>
+          To: {{ frappe.format(lease.end_date, "Date") }}
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Meta -->
+  <div class="re-meta">
+    <div class="re-meta-cell">
+      <div class="lbl">Invoice Date</div>
+      <div class="val">{{ frappe.format(doc.invoice_date, "Date") }}</div>
+    </div>
+    <div class="re-meta-cell">
+      <div class="lbl">Due Date</div>
+      <div class="val">{{ frappe.format(doc.due_date, "Date") }}</div>
+    </div>
+    <div class="re-meta-cell">
+      <div class="lbl">Billing Period</div>
+      <div class="val">{{ frappe.format(doc.billing_period_start, "Date") }} – {{ frappe.format(doc.billing_period_end, "Date") }}</div>
+    </div>
+    <div class="re-meta-cell">
+      <div class="lbl">Currency</div>
+      <div class="val">{{ doc.currency or "SAR" }}</div>
+    </div>
+  </div>
+
+  {% if doc.payment_date %}
+  <div class="re-property" style="background:#d5f5e3;border-color:#a9dfbf;color:#1e8449;">
+    ✓ Payment received on {{ frappe.format(doc.payment_date, "Date") }} via {{ doc.payment_method or "—" }}
+  </div>
+  {% elif prop %}
+  <div class="re-property">
+    📍 {{ prop.property_name }}{% if prop.address %} — {{ prop.address }}{% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Line items -->
+  <table class="re-table">
+    <thead>
+      <tr>
+        <th style="width:50%">Description</th>
+        <th style="width:20%;text-align:right">Qty / Unit</th>
+        <th style="width:15%;text-align:right">Rate</th>
+        <th style="width:15%">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Base rent -->
+      <tr>
+        <td>Monthly Rent{% if doc.billing_period_start %} — {{ frappe.format(doc.billing_period_start, "Date") }} to {{ frappe.format(doc.billing_period_end, "Date") }}{% endif %}</td>
+        <td style="text-align:right">1 month</td>
+        <td style="text-align:right">{{ frappe.format_value(doc.base_rent, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+        <td>{{ frappe.format_value(doc.base_rent, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+
+      <!-- Utility charges -->
+      {% for row in doc.utility_charges %}
+      <tr>
+        <td>{{ row.utility_type }} — {{ row.meter_number or "Meter" }}
+          {% if row.previous_reading is not none and row.current_reading is not none %}
+          <br><small style="color:#888">Reading: {{ row.previous_reading }} → {{ row.current_reading }} = {{ row.consumption }} {{ row.unit_of_measure or "units" }}</small>
+          {% endif %}
+        </td>
+        <td style="text-align:right">{{ row.consumption or "—" }} {{ row.unit_of_measure or "" }}</td>
+        <td style="text-align:right">{{ frappe.format_value(row.rate_per_unit, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+        <td>{{ frappe.format_value(row.amount, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+      {% endfor %}
+
+      <!-- Late fee -->
+      {% if doc.late_fee %}
+      <tr style="color:#c0392b;">
+        <td>Late Payment Fee</td>
+        <td style="text-align:right">—</td>
+        <td style="text-align:right">—</td>
+        <td>{{ frappe.format_value(doc.late_fee, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+      {% endif %}
+
+      <!-- Discount -->
+      {% if doc.discount %}
+      <tr style="color:#1e8449;">
+        <td>Discount</td>
+        <td style="text-align:right">—</td>
+        <td style="text-align:right">—</td>
+        <td>- {{ frappe.format_value(doc.discount, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+      {% endif %}
+    </tbody>
+    <tfoot>
+      <tr class="subtotal-row">
+        <td colspan="3" style="text-align:right">Subtotal</td>
+        <td>{{ frappe.format_value(doc.subtotal, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+      {% if doc.vat_percent %}
+      <tr class="subtotal-row">
+        <td colspan="3" style="text-align:right">VAT ({{ doc.vat_percent }}%)</td>
+        <td>{{ frappe.format_value(doc.vat_amount, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+      {% endif %}
+      <tr class="total-row">
+        <td colspan="3" style="text-align:right">TOTAL DUE</td>
+        <td>{{ frappe.format_value(doc.total_amount, {"fieldtype":"Currency","currency": doc.currency}) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Footer -->
+  <div class="re-footer">
+    <div class="re-notes">
+      <strong>Payment Instructions</strong><br>
+      Please transfer the amount due before {{ frappe.format(doc.due_date, "Date") }}.<br>
+      Reference your invoice number <strong>{{ doc.invoice_no or doc.name }}</strong> in the transfer.<br>
+      {% if doc.notes %}<br>{{ doc.notes }}{% endif %}
+    </div>
+    <div class="re-qr">
+      {% set qr_data = "INV:" ~ (doc.invoice_no or doc.name) ~ "|AMT:" ~ doc.total_amount ~ "|DUE:" ~ doc.due_date %}
+      <img src="{{ get_qr_code_url(qr_data) }}" alt="QR">
+      <p>Scan to pay</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:10px;color:#aaa;margin-top:8px;border-top:1px solid #eee;padding-top:8px;">
+    Generated by Real Estate Management System — {{ frappe.format(frappe.utils.now(), "Datetime") }}
+  </div>
+</div>

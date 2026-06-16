@@ -1,0 +1,16 @@
+{
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "Page",
+ "modified": "2024-01-01 00:00:00.000000",
+ "module": "Real Estate",
+ "name": "real-estate-dashboard",
+ "page_name": "real-estate-dashboard",
+ "roles": [
+  {"role": "Property Manager"},
+  {"role": "Property Owner"},
+  {"role": "Accountant"}
+ ],
+ "script": null,
+ "style": null,
+ "title": "Real Estate Dashboard"
+}

@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "rate_card_name", "utility_type", "effective_from", "col_break_1",
+  "city", "country", "is_active",
+  "section_slabs",
+  "slabs"
+ ],
+ "fields": [
+  {"fieldname": "rate_card_name", "fieldtype": "Data", "label": "Rate Card Name",
+   "reqd": 1, "in_list_view": 1},
+  {"fieldname": "utility_type", "fieldtype": "Select", "label": "Utility Type",
+   "options": "Electricity\nWater\nGas\nInternet", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "effective_from", "fieldtype": "Date", "label": "Effective From", "reqd": 1},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "city", "fieldtype": "Data", "label": "City"},
+  {"fieldname": "country", "fieldtype": "Link", "label": "Country", "options": "Country"},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Active", "default": "1"},
+  {"fieldname": "section_slabs", "fieldtype": "Section Break", "label": "Rate Slabs"},
+  {"fieldname": "slabs", "fieldtype": "Table", "label": "Slabs", "options": "Utility Rate Slab"}
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "Utility Rate Card",
+ "owner": "Administrator",
+ "permissions": [
+  {"role": "Property Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "permlevel": 0},
+  {"role": "Accountant", "read": 1, "write": 1, "create": 1, "delete": 0, "permlevel": 0}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "rate_card_name",
+ "track_changes": 1
+}
