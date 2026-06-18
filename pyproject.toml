@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "real_estate"
+version = "1.0.0"
+description = "Comprehensive Real Estate and Property Management for ERPNext"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Real Estate Module", email = "support@example.com" }
+]
+
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["real_estate*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
